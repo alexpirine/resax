@@ -5,7 +5,7 @@ from setuptools import setup
 if __name__ == '__main__':
     setup(
         name='Django-ResaX',
-        version='0.1-dev0',
+        version='1.0',
         url='https://github.com/alexpirine/resax',
         license='New BSD License',
         author='Alexandre Syenchuk',
