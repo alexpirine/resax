@@ -178,7 +178,6 @@ class AbstractUser(models.Model):
     """
     Représente un utilisateur (membre) d'une organisation.
     """
-    user_id = models.AutoField(primary_key=True)
     #: L'organisation à laquelle appartient l'utilisateur
     organisation = models.ForeignKey(Model['Organisation'], on_delete=models.CASCADE, verbose_name=_("organisation"), related_name='users')
     #: Liste des évènements réservés par l'utilisateur
@@ -407,10 +406,6 @@ class AbstractEvent(models.Model):
     date_stop = models.DateTimeField(_("date_stop"), db_index=True)
     #: Nombre de réservations possibles pour cet évènement. 0 signifie réservations illimitées
     stock = models.PositiveIntegerField(_("stock"), default=0)
-    #: Date de création de l'évènement
-    add_date = models.DateTimeField(_("creation date"), auto_now_add=True, editable=False)
-    #: Date de modification de l'évènement
-    mod_date = models.DateTimeField(_("modificationexit date"), auto_now=True, editable=False)
 
     class Meta:
         abstract = True
