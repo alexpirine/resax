@@ -834,18 +834,17 @@ class AbstractPlanning(models.Model):
     """
     Planning de l'activité.
     """
-    PERIODICITY_CHOICES = (
-        (1, _("daily")),
-        (2, _("weekly")),
-        (3, _("monthly")),
-    )
 
     #: Activité planifiée
     activity = models.ForeignKey(Model['Activity'], on_delete=models.CASCADE, verbose_name=_("activity"), related_name='plannings')
-    #: Périodicité de l'activité planifiée
-    periodicity = models.PositiveIntegerField(_("periodicity"), choices=PERIODICITY_CHOICES)
     #: Jours de la semaine programmés pour l'activité
-    days_of_week = models.CharField(_("days of week"), max_length=7)
+    on_day0 = models.BooleanField(_("monday"), default=False)
+    on_day1 = models.BooleanField(_("tuesday"), default=False)
+    on_day2 = models.BooleanField(_("wednesday"), default=False)
+    on_day3 = models.BooleanField(_("thursday"), default=False)
+    on_day4 = models.BooleanField(_("friday"), default=False)
+    on_day5 = models.BooleanField(_("sunday"), default=False)
+    on_day6 = models.BooleanField(_("saturday"), default=False)
     #: Date et heure de début du premier évènement planifié
     time_start = models.DateTimeField(_("time start"))
     #: Date et heure de fin du premier évènement planifié
