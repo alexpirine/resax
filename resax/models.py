@@ -5,6 +5,9 @@ from __future__ import unicode_literals
 import collections
 import swapper
 
+from .utils import iter_daterange
+from datetime import datetime
+from datetime import time
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -15,6 +18,7 @@ from django.db.models import Sum
 from django.utils import six
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.timezone import make_aware
 from django.utils.translation import ugettext_lazy as _
 
 #
@@ -859,6 +863,39 @@ class AbstractPlanning(models.Model):
 
     def __str__(self):
         return "Planning %s" % self.pk
+
+    def gen_future_event(self, date):
+        event = Model.Event()
+        event.activity = self.activity
+        event.planning = self
+        event.stock = self.activity.stock
+        event.date_start = datetime.combine(date, self.time_start.timetz())
+        event.date_stop = datetime.combine(date, self.time_stop.timetz())
+        if event.date_start > event.date_stop:
+            event.date_stop += timedelta(days=1)
+        return event
+
+    def activate_days(self, days='0123456'):
+        for d in range(7):
+            setattr(self, 'on_day%d' % d, str(d) in days)
+
+    @transaction.atomic
+    def create_future_events(self, date_stop=None):
+        if not self.date_stop and not date_stop:
+            raise ValidationError(_("Stop date should be specified."))
+
+        date_stop = min(filter(None, [date_stop, self.date_stop]))
+        current_date = make_aware(datetime.combine(timezone.now(), time.min))
+
+        added_events = []
+        for day in iter_daterange(current_date, date_stop):
+            if not getattr(self, 'on_day%d' % day.weekday()):
+                continue
+            event = self.gen_future_event(day)
+            event.full_clean()
+            event.save(force_insert=True)
+            added_events.append(event)
+        return added_events
 
 class Planning(AbstractPlanning):
     class Meta(AbstractPlanning.Meta):

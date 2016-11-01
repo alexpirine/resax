@@ -294,21 +294,27 @@ class TestCreatedActivity(TestCase):
         pass
 
 
-class TestReservation(TestCase):
+class TestPlanning(TestCase):
     def setUp(self):
         cdh = M.Organisation.objects.create(name="Club de l'Hers")
+        tennis = cdh.activities.create(name="tennis", stock=3)
+        plan = M.Planning(activity=tennis)
+        plan.time_start = timezone.now() + datetime.timedelta(days=1)
+        plan.time_stop = plan.time_start + datetime.timedelta(hours=1)
+        plan.date_stop = plan.time_stop + datetime.timedelta(days=7)
+        plan.activate_days('012345')
+        plan.full_clean()
+        plan.save(force_insert=True)
 
-        cdh.users.create()
-        cdh.users.create()
-        cdh.users.create()
+    def test_generate_events(self):
+        self.assertEqual(M.Organisation.objects.count(), 1)
+        self.assertEqual(M.Activity.objects.count(), 1)
+        self.assertEqual(M.Planning.objects.count(), 1)
 
-        equipment = cdh.resource_types.create(name="equipment")
-        ball = equipment.resources.create(name=u"ball", stock=3)
-        racquet = equipment.resources.create(name=u"racquet", stock=6)
-
-        tennis = cdh.activities.create(name="tennis", stock=1)
-        tennis.add_resource(ball, 2)
-        tennis.add_resource(racquet, 1)
-
-    def test_remove_reservation(self):
-        pass
+        tennis = M.Activity.objects.first()
+        plan = M.Planning.objects.first()
+        plan.create_future_events(timezone.now() + datetime.timedelta(days=30))
+        all_events = M.Event.objects.order_by('date_start')
+        first_event, last_event = all_events.first(), all_events.last()
+        self.assertEqual(all_events.count(), 7)
+        self.assertEqual(first_event.duration, last_event.duration)
