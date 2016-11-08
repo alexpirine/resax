@@ -8,6 +8,7 @@ import swapper
 from .utils import iter_daterange
 from datetime import datetime
 from datetime import time
+from datetime import timedelta
 from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import ValidationError
@@ -493,7 +494,7 @@ class AbstractEvent(models.Model):
         if self.date_stop <= self.date_start:
             raise ValidationError(_("Event's ending date must be greater than the starting date"))
 
-        if self.planning and self.planning.activity is not self.activity:
+        if self.planning and self.planning.activity != self.activity:
             raise ValidationError(_("Specified planning isn't associated to the activity of this event"))
 
         self._clean_stock()
@@ -885,7 +886,11 @@ class AbstractPlanning(models.Model):
             raise ValidationError(_("Stop date should be specified."))
 
         date_stop = min(filter(None, [date_stop, self.date_stop]))
-        current_date = make_aware(datetime.combine(timezone.now(), time.min))
+        current_date = timezone.now()
+        last_event = self.events.order_by('-date_start').first()
+        if last_event:
+            current_date = max(current_date, last_event.date_start + timedelta(days=1))
+        current_date = make_aware(datetime.combine(current_date, time.min))
 
         added_events = []
         for day in iter_daterange(current_date, date_stop):
