@@ -51,7 +51,6 @@ clean:
 .PHONY: html
 html:
 	$(SPHINXBUILD) -b html $(ALLSPHINXOPTS) $(BUILDDIR)/html
-	cp -r $(BUILDDIR)/html ../api
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 
@@ -92,9 +91,9 @@ qthelp:
 	@echo
 	@echo "Build finished; now you can run "qcollectiongenerator" with the" \
 	      ".qhcp project file in $(BUILDDIR)/qthelp, like this:"
-	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/resax.qhcp"
+	@echo "# qcollectiongenerator $(BUILDDIR)/qthelp/Django-ResaX.qhcp"
 	@echo "To view the help file:"
-	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/resax.qhc"
+	@echo "# assistant -collectionFile $(BUILDDIR)/qthelp/Django-ResaX.qhc"
 
 .PHONY: applehelp
 applehelp:
@@ -111,8 +110,8 @@ devhelp:
 	@echo
 	@echo "Build finished."
 	@echo "To view the help file:"
-	@echo "# mkdir -p $$HOME/.local/share/devhelp/resax"
-	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/resax"
+	@echo "# mkdir -p $$HOME/.local/share/devhelp/Django-ResaX"
+	@echo "# ln -s $(BUILDDIR)/devhelp $$HOME/.local/share/devhelp/Django-ResaX"
 	@echo "# devhelp"
 
 .PHONY: epub
