@@ -204,6 +204,14 @@ class AbstractUser(models.Model):
         if reservation_object.organisation != self.organisation:
             raise ValidationError(_("This doesn't belong to the organisation of the chosen reservation object"))
 
+    def get_upcoming_reservations(self):
+        current_date = timezone.now()
+        return self.reservations.filter(event__date_stop__gt=current_date)
+
+    def get_past_reservations(self):
+        current_date = timezone.now()
+        return self.reservations.filter(event__date_stop__lte=current_date)
+
     @transaction.atomic
     def book_event(self, event, quantity=1):
         """
@@ -585,7 +593,7 @@ class AbstractReservation(models.Model):
         return "Reservation %s" % self.pk
 
     def clean(self):
-        if self.event.get_available_seats(exclude_reservation=self) < self.quantity:
+        if self.event.get_available_seats() < self.quantity:
             raise ValidationError(_("Not enough seats left for this event"))
 
 class Reservation(AbstractReservation):
