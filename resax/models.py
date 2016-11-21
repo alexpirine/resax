@@ -46,11 +46,11 @@ class Model:
 @python_2_unicode_compatible
 class AbstractOrganisation(models.Model):
     """
-    Représente une organisation utilisatrice de l'API.
+    Represents an organisation using the API.
     """
-    #: Nom de l'organisation
+    #: Name of the organisation
     name = models.CharField(_("name"), max_length=255, unique=True)
-    #: Drapeau indiquant si l'organisation a été supprimée ou non
+    #: Flag indicating if the organisation was deleted
     deleted = models.BooleanField(_("deleted"), default=False)
 
     class Meta:
@@ -64,7 +64,7 @@ class AbstractOrganisation(models.Model):
     @transaction.atomic
     def add_user(self):
         """
-        Ajoute un nouveau membre (utilisateur) à l'organisation.
+        Adds a new member (user) to the organisation
 
         :rtype: User
         """
@@ -206,11 +206,15 @@ class AbstractUser(models.Model):
 
     def get_upcoming_reservations(self):
         current_date = timezone.now()
-        return self.reservations.filter(event__date_stop__gt=current_date)
+        return self.reservations.filter(
+            event__date_stop__gt=current_date,
+        ).order_by('event__date_start')
 
     def get_past_reservations(self):
         current_date = timezone.now()
-        return self.reservations.filter(event__date_stop__lte=current_date)
+        return self.reservations.filter(
+            event__date_stop__lte=current_date,
+        ).order_by('-event__date_start')
 
     @transaction.atomic
     def book_event(self, event, quantity=1):
