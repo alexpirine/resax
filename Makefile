@@ -21,7 +21,7 @@ develop:
 	pip install -e .[dev]
 
 sdist:
-	python setup.py sdist --formats=gztar,zip
+	python setup.py sdist --formats=zip
 
 wheel:
 	python setup.py bdist_wheel
@@ -34,7 +34,6 @@ sign_wheel:
 sign:
 	wheel verify dist/${NAME_NORMALIZED}-${VERSION}-*.whl
 	sh -c 'read -s -p "Enter GPG passphrase: " pwd && \
-	gpg --detach-sign --batch --yes --armor --passphrase $$pwd dist/${NAME}-${VERSION}.tar.gz && \
 	gpg --detach-sign --batch --yes --armor --passphrase $$pwd dist/${NAME}-${VERSION}.zip && \
 	gpg --detach-sign --batch --yes --armor --passphrase $$pwd dist/${NAME_NORMALIZED}-${VERSION}-*.whl'
 	@echo

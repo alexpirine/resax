@@ -860,8 +860,8 @@ class AbstractPlanning(models.Model):
     on_day2 = models.BooleanField(_("wednesday"), default=False)
     on_day3 = models.BooleanField(_("thursday"), default=False)
     on_day4 = models.BooleanField(_("friday"), default=False)
-    on_day5 = models.BooleanField(_("sunday"), default=False)
-    on_day6 = models.BooleanField(_("saturday"), default=False)
+    on_day5 = models.BooleanField(_("saturday"), default=False)
+    on_day6 = models.BooleanField(_("sunday"), default=False)
     #: Date et heure de début du premier évènement planifié
     time_start = models.DateTimeField(_("time start"))
     #: Date et heure de fin du premier évènement planifié
