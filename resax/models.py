@@ -19,6 +19,7 @@ from django.db.models import Sum
 from django.utils import six
 from django.utils import timezone
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.timezone import localtime
 from django.utils.timezone import make_aware
 from django.utils.translation import ugettext_lazy as _
 
@@ -882,8 +883,8 @@ class AbstractPlanning(models.Model):
         event.activity = self.activity
         event.planning = self
         event.stock = self.activity.stock
-        event.date_start = datetime.combine(date, self.time_start.timetz())
-        event.date_stop = datetime.combine(date, self.time_stop.timetz())
+        event.date_start = datetime.combine(date, localtime(self.time_start).timetz())
+        event.date_stop = datetime.combine(date, localtime(self.time_stop).timetz())
         if event.date_start > event.date_stop:
             event.date_stop += timedelta(days=1)
         return event
