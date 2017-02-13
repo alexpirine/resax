@@ -883,8 +883,11 @@ class AbstractPlanning(models.Model):
         event.activity = self.activity
         event.planning = self
         event.stock = self.activity.stock
-        event.date_start = datetime.combine(date, localtime(self.time_start).timetz())
-        event.date_stop = datetime.combine(date, localtime(self.time_stop).timetz())
+        event.date_start = datetime.combine(date, self.time_start.timetz())
+        event.date_stop = datetime.combine(date, self.time_stop.timetz())
+        # daylight saving time correction
+        event.date_start += event.date_start.dst() - localtime(event.date_start).dst()
+        event.date_stop += event.date_stop.dst() - localtime(event.date_stop).dst()
         if event.date_start > event.date_stop:
             event.date_stop += timedelta(days=1)
         return event
