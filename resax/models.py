@@ -902,7 +902,7 @@ class AbstractPlanning(models.Model):
             raise ValidationError(_("Stop date should be specified."))
 
         date_stop = min(filter(None, [date_stop, self.date_stop]))
-        current_date = timezone.now()
+        current_date = max(self.time_start, timezone.now())
         last_event = self.events.order_by('-date_start').first()
         if last_event:
             current_date = max(current_date, last_event.date_start + timedelta(days=1))
